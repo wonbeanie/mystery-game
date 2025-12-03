@@ -470,83 +470,90 @@ function finishTrun(hint){
 function createPotion() {
   const WIDTH_MAX = 400;
   const HEIGHT_MAX = 400;
-  const ADD_INDEX = 100;
-  const NEAR_NUM = 30;
-  const DISTANT_NUM = 50;
+  const NEAR_NUM = 15;
+  const PADDING_NUM = 20;
   let map = "";
 
-  gameData[confirmation].positionList[correct[confirmation]] = [getRandomIndex(WIDTH_MAX - (DISTANT_NUM * 2), DISTANT_NUM), getRandomIndex(HEIGHT_MAX - (DISTANT_NUM * 2), DISTANT_NUM)];
+  const MAX = WIDTH_MAX - PADDING_NUM;
+  const MIN = HEIGHT_MAX - PADDING_NUM;
+
+  gameData[confirmation].positionList[correct[confirmation]] = [getRandomIndex(MAX, PADDING_NUM), getRandomIndex(MAX, PADDING_NUM)];
+
+  let [confirmationX, confirmationY] = gameData[confirmation].positionList[correct[confirmation]];
 
   Object.keys(gameData).forEach((key)=>{
-    gameData[key].origin.forEach((data)=>{
-      let [x,y] = gameData[confirmation].positionList[correct[confirmation]];
+    let [x,y] = gameData[key].positionList[correct[key]] = [
+      confirmationX + getRandomIndex(NEAR_NUM),
+      confirmationY + getRandomIndex(NEAR_NUM)
+    ];
 
-      if(data === correct[key]){
-        x += getRandomIndex(NEAR_NUM);
-        y += getRandomIndex(NEAR_NUM);
-      }
-      else {
-        // let randomPosition = getRandomIndex([x, y]);
-        // let positionSelect = 0;
+    let positionListTemp = {};
 
-        // switch(randomPosition){
-        //   case x:
-        //     if(x >= Math.floor(WIDTH_MAX/2)){
-        //       positionSelect = 0;
-        //     }
-        //     else {
-        //       positionSelect = 1;
-        //     }
-        //     break;
-        //   case y:
-        //     if(y >= Math.floor(HEIGHT_MAX/2)){
-        //         positionSelect = 3;
-        //       }
-        //       else {
-        //         positionSelect = 2;
-        //       }
-        //     break;
-        // }
-
-        // let calX = 0;
-        // let calY = 0;
-
-        // switch(positionSelect){
-        //   case 0:
-        //     calX = -getRandomIndex(x - DISTANT_NUM, DISTANT_NUM);
-        //     y = getRandomIndex(HEIGHT_MAX - DISTANT_NUM, DISTANT_NUM);
-        //     break;
-
-        //   case 1:
-        //     calX = getRandomIndex(WIDTH_MAX - x, DISTANT_NUM);
-        //     y = getRandomIndex(HEIGHT_MAX - DISTANT_NUM, DISTANT_NUM);
-        //     break;
-
-        //   case 2:
-        //     x = getRandomIndex(WIDTH_MAX- DISTANT_NUM, DISTANT_NUM);
-        //     calY = getRandomIndex(HEIGHT_MAX - y, DISTANT_NUM);
-        //     break;
-
-        //   case 3:
-        //     x = getRandomIndex(WIDTH_MAX - DISTANT_NUM, DISTANT_NUM);
-        //     calY = -getRandomIndex(y - DISTANT_NUM, DISTANT_NUM);
-        //     break;
-        // }
-
-        // x += calX;
-        // y += calY;
-
-        x = getRandomIndex(WIDTH_MAX - x, DISTANT_NUM);
-        y = getRandomIndex(WIDTH_MAX - y, DISTANT_NUM);
+    gameData[key].origin.forEach((data, i)=>{
+      if(data !== correct[key]){
+        x = getRandomIndex(MAX, PADDING_NUM);
+        y = getRandomIndex(MAX, PADDING_NUM);
       }
 
-      gameData[key].positionList[data] = [x, y];
+      positionListTemp[data] = [x, y];
 
       if(key !== "suspect"){
         map += `${data} (${x}, ${y}), `;
       }
       
     });
+
+    let timeout = 0;
+
+    while(true){
+      let check = false;
+
+      Object.keys(positionListTemp).forEach((key)=>{
+        let [x, y] = positionListTemp[key];
+
+        Object.keys(positionListTemp).forEach((comparisonKey)=>{
+          if(key === comparisonKey){
+            return;
+          }
+
+          let [x2, y2] = positionListTemp[comparisonKey];
+
+          if(
+            (x > x2 - NEAR_NUM && x < x2 + NEAR_NUM) ||
+            (y > y2 - NEAR_NUM && y < y2 + NEAR_NUM)
+          ){
+            let rangeMaxX = x2 + NEAR_NUM > MAX ? MAX : x2 + NEAR_NUM;
+            let rangeMinX = x2 - NEAR_NUM < PADDING_NUM ? PADDING_NUM : x2 - NEAR_NUM;
+
+            let rangeMaxY = y2 + NEAR_NUM > MAX ? MAX : y2 + NEAR_NUM;
+            let rangeMinY = y2 - NEAR_NUM < PADDING_NUM ? PADDING_NUM : y2 - NEAR_NUM;
+
+            x = getRandomExcludingRange(
+              WIDTH_MAX - PADDING_NUM, PADDING_NUM, 
+              rangeMaxX, rangeMinX
+            );
+
+            y = getRandomExcludingRange(
+              HEIGHT_MAX - PADDING_NUM, PADDING_NUM, 
+              rangeMaxY, rangeMinY
+            );
+
+            check = true;
+          }
+        });
+
+      positionListTemp[key] = [x, y];
+    });
+
+      timeout += 1;
+
+      if(timeout > 1000 || !check){
+        break;
+      }
+    }
+
+    gameData[key].positionList = positionListTemp;
+
     map += "\n";
   });
 
@@ -676,42 +683,6 @@ function drawMapPoint(){
       ctx.textAlign = 'left'; 
       ctx.textBaseline = 'middle'; 
 
-      // let disatnceCheck = Object.keys(gameData[key].positionList).some((comparisonKey) => {
-      //   if(positionKey === comparisonKey){
-      //     return;
-      //   }
-
-      //   const [comparisonX, comparisonY] = gameData[key].positionList[comparisonKey];
-      //   let distanceX = x - comparisonX;
-      //   let distanceY = y - comparisonY;
-
-      //   if(
-      //     (Math.abs(distanceX) >= 0 && Math.abs(distanceX) <= 30) && 
-      //     (Math.abs(distanceY) >= 0 && Math.abs(distanceY) <= 20)
-      //   ){
-      //     console.log("close?", positionKey, comparisonKey, distanceX, distanceY);
-      //     drawNameY += (10 * -(distanceX / Math.abs(distanceX)));
-      //     drawNameX += (10 * (distanceY / Math.abs(distanceY)));
-      //     return true;
-      //   }
-
-        
-      //   if(Math.abs(distanceX) >= 0 && Math.abs(distanceX) <= 20){
-      //     console.log(distanceX, distanceX / Math.abs(distanceX));
-      //     drawNameY += (10 * (distanceX / Math.abs(distanceX)));
-      //     return true;
-      //   }
-        
-      //   if(Math.abs(distanceY) >= 0 && Math.abs(distanceY) <= 20){
-      //     drawNameX += (10 * (distanceY / Math.abs(distanceY)));;
-      //     return true;
-      //   }
-      // });
-
-      // if(!disatnceCheck){
-      //   drawNameY -= 10;
-      // }
-
       ctx.fillText(positionKey, drawNameX, drawNameY - 10);
     });
   });
@@ -721,4 +692,23 @@ function getMapElement(type) {
   const imgId = `${type}Map`;
 
   return document.getElementById(imgId);
+}
+
+function getRandomExcludingRange(max, min, excludMax, excludMin){
+  const max1 = excludMin - 1;
+  const size1 = max1 - min + 1;
+
+  const min2 = excludMax + 1;
+  const size2 = max - min2 + 1;
+
+  let index = getRandomIndex(size1 + size2);
+
+  if(index < size1){
+    index = index + min;
+  }
+  else {
+    index = (index - size1) + min2;
+  }
+
+  return index;
 }
