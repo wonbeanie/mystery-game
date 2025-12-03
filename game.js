@@ -102,6 +102,10 @@ function gameInit(){
       let dataElement = document.createElement("td");
       dataElement.innerText = data;
 
+      dataElement.addEventListener("click", (e) =>{
+        e.target.style = "color: red;";
+      });
+
       tbodyElement.appendChild(dataElement);
     });
 
