@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <style>
+            table{ border-collapse : collapse; }  /*이중선 제거*/
+            th,td{
+                width: 100px;
+                height: 50px;
+                text-align: center;
+                border: 1px solid #000;
+                
+                vertical-align: top;	/* 위 */
+                vertical-align: bottom;   /* 아래 */
+                vertical-align: middle;   /* 가운데 */
+            }
+            .image-container {
+                font-family: sans-serif;
+                display: flex;
+                min-height: 100vh;
+                margin: 0;
+            }
+            .image-box {
+                position: relative; /* 자식 요소의 absolute 위치 기준 */
+                display: inline-block; /* 내용물 크기만큼 */
+            }
+            .image-box img {
+                display: block; /* 이미지 하단의 여백 제거 */
+                max-width: 100%;
+                height: auto;
+            }
+            .image-box canvas {
+                position: absolute; /* 이미지 위에 겹치기 */
+                top: 0;
+                left: 0;
+                /* width와 height는 JS에서 이미지 크기에 맞춰 설정할 것 */
+            }
+        </style>
+    </head>
+    <body>
+        <h1>추리게임</h1>
+        <h3>어떤 지역의 장소에서 누가 살해했는지 7턴안에 찾는 간단한 게임</h3>
+
+        <table id="game-infomation-table">
+
+        </table>
+        
+        <br/>
+
+        <div>
+            정답
+            <div id="area-correct">
+                <label for="area">지역 : </label>
+            </div>
+
+            <div id="place-correct">
+                <label for="place">장소 : </label>
+            </div>
+
+            <div id="suspect-correct">
+                <label for="suspect">용의자 : </label>
+            </div>
+
+            <input type="button" value="정답 확인!" onclick="correctSend()"/>
+        </div>
+
+        <br/>
+
+        <div id="hint">
+            
+        </div>
+
+        <div id="map-images" class="image-container" style="display:none;">
+            <div class="image-box">
+                <img id="areaMap" src="AreaMap.png" width="400px" />
+                <canvas id="areaMapCavnas"></canvas>
+            </div>
+            <div class="image-box">
+                <img id="placeMap" src="PlaceMap.png" width="400px" />
+                <canvas id="placeMapCavnas"></canvas>
+            </div>
+        </div>
+
+        <script src="./game.js" ></script>
+    </body>
+</html>
