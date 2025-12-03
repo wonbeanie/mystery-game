@@ -496,10 +496,6 @@ function createPotion() {
       }
 
       positionListTemp[data] = [x, y];
-
-      if(key !== "suspect"){
-        map += `${data} (${x}, ${y}), `;
-      }
       
     });
 
@@ -551,6 +547,15 @@ function createPotion() {
         break;
       }
     }
+
+    Object.keys(positionListTemp).forEach((positionKey)=>{
+      const [x, y] = positionListTemp[positionKey];
+
+      if(key !== "suspect"){
+        map += `${positionKey} (${x}, ${y}), `;
+      }
+
+    });
 
     gameData[key].positionList = positionListTemp;
 
