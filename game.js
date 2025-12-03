@@ -103,7 +103,12 @@ function gameInit(){
       dataElement.innerText = data;
 
       dataElement.addEventListener("click", (e) =>{
-        e.target.style = "color: red;";
+        if(e.target.style.color === "red"){
+          e.target.style = "color : unset;";
+        }
+        else {
+          e.target.style = "color: red;";
+        }
       });
 
       tbodyElement.appendChild(dataElement);
