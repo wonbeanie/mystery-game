@@ -435,8 +435,8 @@ function correctSend(){
     return;
   }
 
-  viewComputerAnswer(`Turn ${turn}. 정답을 ${correctCount}개 맞았어요. (${area},${place},${suspect})`);
-  // viewComputerAnswer(`Turn ${turn}`);
+  // viewComputerAnswer(`Turn ${turn}. 정답을 ${correctCount}개 맞았어요. (${area},${place},${suspect})`);
+  viewComputerAnswer(`Turn ${turn}`);
 
   let type = getRandomArray(Object.keys(gameData));
 
