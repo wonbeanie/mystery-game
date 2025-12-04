@@ -68,7 +68,10 @@ let turn = 1;
 let confirmation = "";
 let lastConfirmation = "";
 
+let timer = 0;
+
 function gameInit(){
+  
   let gameDataTemp = JSON.parse(JSON.stringify(gameData));
   Object.keys(gameData).forEach(key => {
     gameData[key].origin.map((data)=>{
@@ -117,6 +120,15 @@ function gameInit(){
     infoTableElement.appendChild(tbodyElement);
   });
 
+  setInterval(()=>{
+    timer += 1;
+    
+    let timerElement = document.getElementById("timer");
+
+    timerElement.innerText = getPlayTime();
+
+  }, 1000);
+
   Object.keys(gameData).forEach((key)=>{
     let correctElement = document.getElementById(`${key}-correct`);
     let selectElement = document.createElement("select");
@@ -135,6 +147,13 @@ function gameInit(){
 
     correctElement.appendChild(selectElement);
   });
+}
+
+function getPlayTime(){
+  let sec = timer % 60 > 9 ? timer % 60 : `0${timer % 60}`;
+  let min = Math.floor(timer / 60) > 59 ? Math.floor(timer / 60) : `0${Math.floor(timer / 60)}`;
+
+  return `시간 : ${min}:${sec}`;
 }
 
 function transformGrapheme(str) {
@@ -439,7 +458,7 @@ function correctSend(){
   }
 
   if(turn === 7){
-    alert(`추리 실패...\n정답은 : ${correct.area},${correct.place},${correct.suspect} 입니다.`);
+    alert(`추리 실패... (${getPlayTime()})\n정답은 : ${correct.area},${correct.place},${correct.suspect} 입니다.`);
     return;
   }
 
